@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import copy
 
 with open('input.txt') as file:
 #with open('test-input.txt') as file:
@@ -49,8 +48,7 @@ for report in input_list:
     if is_safe(levels):
         counter += 1
     # if not, we need to split it out into separate arrays with one less
-    # element and check each. If we can make it safe by removing one element to
-    # be removed, we can mark as safe.
+    # element and check each. We can make it safe by removing one element.
     else:
         for i in range(len(levels)):
             short_levels = levels.copy()
