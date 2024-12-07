@@ -96,8 +96,8 @@ def part2(grid, visited):
 
         # For each  test we'll save our location and facing. We can use this
         # later to check if we've been here. Format:
-        # [f"{facing},{y},{x}"]
-        visited = []
+        # {f"{facing},{y},{x}"}
+        visited = set()
 
         # Need to reset these for every test.
         facing = orig_facing
@@ -106,7 +106,7 @@ def part2(grid, visited):
 
         # stop if we go off the board, or if we have already been here.
         while (facing != 'na') and (f"{facing},{y},{x}" not in visited):
-            visited.append(f"{facing},{y},{x}")
+            visited.add(f"{facing},{y},{x}")
             facing, y, x = check_next_location(grid, facing, y, x)
 
         if f"{facing},{y},{x}" in visited:
