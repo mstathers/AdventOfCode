@@ -1,7 +1,7 @@
 from typing import Counter
 
 
-with open('test-input.txt', 'r', encoding='utf8') as file:
+with open('input.txt', 'r', encoding='utf8') as file:
     rawdisk = [int(x) for x in list(file.read().strip())]
 
 def part1(rawdisk: list[int]):
@@ -22,8 +22,7 @@ def explode_disk(disk: list[int]):
         # file block
         if idx_i % 2 == 0:
             if i == 0:
-                print("Length of file block cannot be zero")
-                raise
+                raise AssertionError("Length of file block cannot be zero")
             for _ in range(i):
                 new_disk.append(file_id)
 
@@ -33,21 +32,6 @@ def explode_disk(disk: list[int]):
                 new_disk.append('.')
 
     return new_disk
-
-# Cool recursive function that failed due to max recursion depth with real
-# input .:(
-def move_last_element_into_empty_spot(disk: list):
-    # remove spaces
-    if disk[-1] == '.':
-        disk.pop()
-        return move_last_element_into_empty_spot(disk)
-
-    try:
-        empty_slot = disk.index('.')
-        disk[empty_slot] = disk.pop()
-        return move_last_element_into_empty_spot(disk)
-    except ValueError:
-        return disk
 
 def defrag_disk(disk: list):
     while True:
@@ -73,7 +57,7 @@ def calc_checksum(disk: list[int]) -> int:
 def part2(rawdisk: list[int]):
     exploded_disk = explode_disk(rawdisk)
 
-    print(exploded_disk)
+#    print(exploded_disk)
     defragged_disk = whole_disk_defrag(exploded_disk)
 
     checksum = calc_checksum(defragged_disk)
@@ -82,46 +66,55 @@ def part2(rawdisk: list[int]):
 
 
 def whole_disk_defrag(disk: list):
+    # Gives us all files and a length of each file.
     file_sizes = Counter(disk)
-    rear_value = disk[-1]
-    while True:
-        if rear_value == 0:
-            break
-        rear_size = file_sizes[rear_value]
-        print(f"file_id: {rear_value}, file_size: {rear_size}")
+    # We start at the back.
+    file_id = disk[-1]
 
+    while True:
+        # Don't bother checking further if we get to file id 0
+        if file_id == 0:
+            break
+
+        # Save file size from counter for later
+        file_size = file_sizes[file_id]
+
+        cur_file_location = disk.index(file_id)
         last_empty_index = 0
+
         found = False
         while not found:
+            # Get start of next block of empty space.
             try:
                 empty_block = disk.index('.', last_empty_index + 1)
             except ValueError:
                 break
-            print(f"checking {empty_block}")
-            for i in range(rear_size):
-                #print(i)
+
+            # Don't bother checking to the right of the current location
+            if empty_block > cur_file_location:
+                break
+
+            # Check block of empty space to see if it can fit our file.
+            for i in range(file_size):
                 if disk[empty_block + i] != '.':
                     last_empty_index = empty_block
-                    print(f"next block is not empty. Setting last_empty_index to {last_empty_index}")
                     break
 
 
-                if i == rear_size-1:
-                    print(f"file_id {rear_value} will fit starting at index: {empty_block}")
+                # It can fit our file!
+                if i == file_size-1:
+                    # Remove current file from its current location, replacing with empty space.
+                    for _ in range(file_size):
+                        disk[disk.index(file_id)] = '.'
 
-                    # Remove current file
-                    del disk[disk.index(rear_value): disk.index(rear_value)+rear_size] # XXX
                     # Add file to empty spot
-                    for j in range(rear_size):
-                        disk[empty_block + j] = rear_value
-                        #disk.pop() #XXX
-                        #disk.reverse().remove(rear_value)
+                    for j in range(file_size):
+                        disk[empty_block + j] = file_id
 
                     found = True
 
-
-        print(disk)
-        rear_value -= 1
+        # check the next file
+        file_id -= 1
 
     return disk
 
