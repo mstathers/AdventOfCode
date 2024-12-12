@@ -20,8 +20,6 @@ def evaluate_stone_depth(pebble: int, max_depth, cur_depth=0):
 
     cur_depth+=1
 
-
-    # 0 to 1
     if pebble == 0:
         return evaluate_stone_depth(1, max_depth, cur_depth)
 
@@ -36,23 +34,17 @@ def evaluate_stone_depth(pebble: int, max_depth, cur_depth=0):
         r_pebble.reverse()
 
 
-        #new_stones.append(int(''.join(l_pebble)))
         l_pebble = int(''.join(l_pebble))
 #        print(f"l_pebble: {l_pebble}, cur_depth: {cur_depth}")
         l_path = evaluate_stone_depth(l_pebble, max_depth, cur_depth)
-        #new_stones.append(int(''.join(r_pebble)))
-        #stone_count += 1
         r_pebble = int(''.join(r_pebble))
 #        print(f"r_pebble: {r_pebble}, cur_depth: {cur_depth}")
         r_path = evaluate_stone_depth(r_pebble, max_depth, cur_depth)
 
         return l_path + r_path
 
-    # Else, value * 2024
     pebble = pebble * 2024
     return evaluate_stone_depth(pebble, max_depth, cur_depth)
-
-
 
 
 
